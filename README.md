@@ -3,7 +3,7 @@
 > **Paper:** *Testing Persona Effects in Multimodal LLMs: Do Demographic Personas Produce Distinct Urban Sentiment Judgments?*
 > Submitted to UrbCom 2026.
 
-This repository contains all code, data, and pre-computed results for the empirical study described in the paper. The experiment deploys **1,200 synthetic annotators** — defined by a factorial grid of gender, economic status, political orientation, and personality — to evaluate **50 urban scene images** from the [PerceptSent](https://github.com/PerceptSent/PerceptSent) dataset, producing **59,708 structured sentiment annotations**.
+This repository contains all code, data, and pre-computed results for the empirical study described in the paper. The experiment deploys **1,200 synthetic annotators** — defined by a factorial grid of gender, economic status, political orientation, and personality — to evaluate **50 urban scene images** from the [PerceptSent](https://drive.google.com/file/d/1JKgmFh2VRHZMD3eekIY0-Y25ODIhV5zI/view?usp=share_link) dataset, producing **59,708 structured sentiment annotations**.
 
 ---
 
