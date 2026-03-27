@@ -150,7 +150,10 @@ The pre-computed annotations in `outputs/annotations_baseline.jsonl` are suffici
 
 1. Download the PerceptSent images from the [PerceptSent repository](https://github.com/PerceptSent/PerceptSent).
 2. Place the JPEG files in `data/raw_images/` as `{image_id}.jpg`.
-3. Update `IMAGE_DIR` in your `.env` if the path differs.
+3. Download the agreement-filtered CSV subsets for `data/perceptsent-agreement/` from [Google Drive](https://drive.google.com/drive/folders/1LQAOGI2ojzE5ykjr5WbtDJFM1PQWF9On).
+4. Update `IMAGE_DIR` in your `.env` if the path differs.
+
+Note: the repository keeps the `data/perceptsent-agreement/` directory structure, but does not track the CSV files themselves.
 
 ---
 

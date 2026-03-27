@@ -36,6 +36,10 @@ outputs/failed_personas.jsonl
 # Raw images — never tracked (too large; download separately)
 data/raw_images/
 
+# Agreement-filtered PerceptSent CSV subsets — keep folder, not files
+data/perceptsent-agreement/*.csv
+!data/perceptsent-agreement/.gitkeep
+
 # OS
 .DS_Store
 Thumbs.db
