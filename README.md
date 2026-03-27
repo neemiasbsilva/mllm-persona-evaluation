@@ -279,6 +279,7 @@ Principal findings:
 ## Citation
 
 ```bibtex
+TODO EXAMPLE
 @inproceedings{anonymous2026persona,
   title     = {Testing Persona Effects in Multimodal LLMs: Do Demographic
                Personas Produce Distinct Urban Sentiment Judgments?},
