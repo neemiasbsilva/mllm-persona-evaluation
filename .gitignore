@@ -31,7 +31,7 @@ outputs/checkpoints/
 outputs/personas_synthetic_interview.jsonl
 outputs/personas_baseline.jsonl
 outputs/failed_personas.jsonl
-ITS.md
+*ITS.md
 
 # Raw images — never tracked (too large; download separately)
 data/raw_images/
