@@ -279,13 +279,7 @@ Principal findings:
 ## Citation
 
 ```bibtex
-TODO EXAMPLE
-@inproceedings{anonymous2026persona,
-  title     = {Testing Persona Effects in Multimodal LLMs: Do Demographic
-               Personas Produce Distinct Urban Sentiment Judgments?},
-  booktitle = {Proceedings of UrbCom 2026},
-  year      = {2026}
-}
+WHEN PUBLISH ADD IN HERE THE BIB
 ```
 
 ---
