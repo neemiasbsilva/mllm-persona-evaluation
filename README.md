@@ -133,7 +133,7 @@ Each annotation returns a structured JSON with:
 ### Install
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/neemiasbsilva/mllm-persona-simulation-urbcom.git
 cd mllm-persona-simulation-urbcom
 
 # Install dependencies
