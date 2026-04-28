@@ -1,12 +1,11 @@
 \begin{table}
-\caption{Convergence and ground-truth agreement metrics per experimental condition. SD = standard deviation across within-profile groups. 95\% CI computed via non-parametric bootstrap (N=1\,000 resamples, seed 42).}
+\caption{Convergence and ground-truth agreement metrics per experimental condition. 95\% CI computed via non-parametric bootstrap over within-profile groups (N=1\,000 resamples, seed 42).}
 \label{tab:convergence_results}
-\begin{tabular}{lrrrrrrrrlrlll}
+\begin{tabular}{lrlrlrrrrlrl}
 \toprule
-Condition & Mean modal ratio & SD modal ratio & Mean sentiment var & SD sentiment var & N annotations & N images & N personas & Cohen κ (linear) & Cohen κ 95\% CI & Macro F1 & Macro F1 95\% CI & Flip rate vs A & Improved toward GT \\
+Condition & Mean modal ratio & Modal ratio 95\% CI & Mean sentiment var & Sentiment var 95\% CI & N annotations & N images & N personas & Cohen κ (linear) & Cohen κ 95\% CI & Macro F1 & Macro F1 95\% CI \\
 \midrule
-Baseline (A) & 0.871000 & 0.185000 & 0.211000 & 0.405000 & 59708 & 50 & 1200 & 0.543000 & [0.386, 0.680] & 0.309000 & [0.224, 0.396] & NaN & NaN \\
-Full Persona (B) & 0.826000 & 0.239000 & 0.555000 & 1.177000 & 508 & 50 & 11 & 0.395000 & [0.193, 0.556] & 0.256000 & [0.176, 0.331] & 38.9\% & 11.9\% \\
+Baseline (A) & 0.871000 & [0.860, 0.881] & 0.211000 & [0.191, 0.235] & 59708 & 50 & 1200 & 0.543000 & [0.386, 0.680] & 0.309000 & [0.224, 0.396] \\
 \bottomrule
 \end{tabular}
 \end{table}

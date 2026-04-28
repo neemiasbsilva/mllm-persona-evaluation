@@ -11,7 +11,7 @@ SENTIMENT_LABELS = (
     "Negative",
 )
 
-CONDITIONS = ("baseline",)
+CONDITIONS = ("baseline", "no_persona_think", "no_persona_no_think")
 
 
 class AnnotationState(TypedDict):

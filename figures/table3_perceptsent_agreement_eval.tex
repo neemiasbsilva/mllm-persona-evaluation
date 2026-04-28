@@ -1,34 +1,22 @@
 \begin{table}
-\caption{Evaluation metrics per agreement subset $(\sigma, p)$ and condition. All matched images retained; variance from 5 folds of 60\% annotation resampling per image (\texttt{random\_seed}=42). Cohen's $\kappa$ weighting: unweighted (binary), linear (3-class), quadratic (ordinal-5). Macro F1 is the primary metric following MLLMsent (arXiv:2508.16873).}
+\caption{Evaluation metrics per agreement subset $(\sigma, p)$ and condition. All matched images retained; point estimate from 60% annotation resampling per image; 95\% CI via image bootstrap ($N=1000$, seed 42). Cohen's $\kappa$ weighting: unweighted (binary), linear (3-class), quadratic (ordinal-5). Macro F1 is the primary metric following MLLMsent (arXiv:2508.16873).}
 \label{tab:perceptsent_agreement_eval}
 \begin{tabular}{llllrrrrrrrr}
 \toprule
 key & p\_type & problem & condition & n\_images & ann\_per\_image & accuracy\_mean & f1\_macro\_mean & cohen\_kappa\_mean & f1\_pos\_mean & roc\_auc\_mean & mae\_mean \\
 \midrule
-sigma3\_p2neg & p2neg & binary & baseline & 50.0000 & 716.0000 & 0.8200 & 0.8069 & 0.6154 & 0.7568 & 0.8209 & --- \\
-sigma3\_p2neg & p2neg & binary & full\_persona & 50.0000 & 6.0000 & 0.7240 & 0.7087 & 0.4229 & 0.6424 & 0.7253 & --- \\
-sigma4\_p2neg & p2neg & binary & baseline & 41.0000 & 716.0000 & 0.8537 & 0.8423 & 0.6878 & 0.8000 & 0.8723 & --- \\
-sigma4\_p2neg & p2neg & binary & full\_persona & 41.0000 & 6.0000 & 0.8098 & 0.8016 & 0.6142 & 0.7615 & 0.8484 & --- \\
-sigma5\_p2neg & p2neg & binary & baseline & 28.0000 & 716.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
-sigma5\_p2neg & p2neg & binary & full\_persona & 28.0000 & 6.0000 & 0.9143 & 0.9073 & 0.8166 & 0.8823 & 0.9310 & --- \\
-sigma3\_p2plus & p2plus & binary & baseline & 50.0000 & 716.0000 & 0.8000 & 0.7971 & 0.5968 & 0.7727 & 0.8083 & --- \\
-sigma3\_p2plus & p2plus & binary & full\_persona & 50.0000 & 6.0000 & 0.7000 & 0.6994 & 0.4154 & 0.6892 & 0.7217 & --- \\
-sigma4\_p2plus & p2plus & binary & baseline & 43.0000 & 716.0000 & 0.8605 & 0.8586 & 0.7196 & 0.8421 & 0.8744 & --- \\
-sigma4\_p2plus & p2plus & binary & full\_persona & 43.0000 & 6.0000 & 0.7163 & 0.7160 & 0.4545 & 0.7136 & 0.7471 & --- \\
-sigma5\_p2plus & p2plus & binary & baseline & 24.0000 & 716.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
-sigma5\_p2plus & p2plus & binary & full\_persona & 24.0000 & 6.0000 & 0.8500 & 0.8430 & 0.6869 & 0.8102 & 0.8489 & --- \\
-sigma3\_p3 & p3 & multiclass-3 & baseline & 45.0000 & 716.0000 & 0.7111 & 0.5878 & 0.4482 & --- & --- & --- \\
-sigma3\_p3 & p3 & multiclass-3 & full\_persona & 45.0000 & 6.0000 & 0.6622 & 0.4817 & 0.3653 & --- & --- & --- \\
-sigma4\_p3 & p3 & multiclass-3 & baseline & 34.0000 & 716.0000 & 0.8529 & 0.7077 & 0.6868 & --- & --- & --- \\
-sigma4\_p3 & p3 & multiclass-3 & full\_persona & 34.0000 & 6.0000 & 0.7706 & 0.5457 & 0.5475 & --- & --- & --- \\
-sigma5\_p3 & p3 & multiclass-3 & baseline & 18.0000 & 716.0000 & 1.0000 & 1.0000 & 1.0000 & --- & --- & --- \\
-sigma5\_p3 & p3 & multiclass-3 & full\_persona & 18.0000 & 6.0000 & 0.9000 & 0.8993 & 0.8000 & --- & --- & --- \\
-sigma3\_p5 & p5 & ordinal-5 & baseline & 36.0000 & 716.0000 & 0.4722 & 0.3088 & 0.7912 & --- & --- & 0.7222 \\
-sigma3\_p5 & p5 & ordinal-5 & full\_persona & 36.0000 & 6.0000 & 0.4167 & 0.2864 & 0.6745 & --- & --- & 0.9167 \\
-sigma4\_p5 & p5 & ordinal-5 & baseline & 16.0000 & 716.0000 & 0.6875 & 0.5141 & 0.8491 & --- & --- & 0.4375 \\
-sigma4\_p5 & p5 & ordinal-5 & full\_persona & 16.0000 & 6.0000 & 0.5625 & 0.4207 & 0.7255 & --- & --- & 0.7375 \\
-sigma5\_p5 & p5 & ordinal-5 & baseline & 4.0000 & 716.0000 & 1.0000 & 1.0000 & 1.0000 & --- & --- & 0.0000 \\
-sigma5\_p5 & p5 & ordinal-5 & full\_persona & 4.0000 & 6.0000 & 0.8000 & 0.8667 & 0.8857 & --- & --- & 0.6000 \\
+sigma3\_p2neg & p2neg & binary & baseline & 50 & 716 & 0.8200 & 0.8069 & 0.6154 & 0.7568 & 0.8209 & --- \\
+sigma4\_p2neg & p2neg & binary & baseline & 41 & 716 & 0.8537 & 0.8423 & 0.6878 & 0.8000 & 0.8723 & --- \\
+sigma5\_p2neg & p2neg & binary & baseline & 28 & 716 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
+sigma3\_p2plus & p2plus & binary & baseline & 50 & 716 & 0.8000 & 0.7971 & 0.5968 & 0.7727 & 0.8083 & --- \\
+sigma4\_p2plus & p2plus & binary & baseline & 43 & 716 & 0.8605 & 0.8586 & 0.7196 & 0.8421 & 0.8744 & --- \\
+sigma5\_p2plus & p2plus & binary & baseline & 24 & 716 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
+sigma3\_p3 & p3 & multiclass-3 & baseline & 45 & 716 & 0.7111 & 0.5878 & 0.4482 & --- & --- & --- \\
+sigma4\_p3 & p3 & multiclass-3 & baseline & 34 & 716 & 0.8529 & 0.7077 & 0.6868 & --- & --- & --- \\
+sigma5\_p3 & p3 & multiclass-3 & baseline & 18 & 716 & 1.0000 & 1.0000 & 1.0000 & --- & --- & --- \\
+sigma3\_p5 & p5 & ordinal-5 & baseline & 36 & 716 & 0.4722 & 0.3088 & 0.7912 & --- & --- & 0.7222 \\
+sigma4\_p5 & p5 & ordinal-5 & baseline & 16 & 716 & 0.6875 & 0.5141 & 0.8491 & --- & --- & 0.4375 \\
+sigma5\_p5 & p5 & ordinal-5 & baseline & 4 & 716 & 1.0000 & 1.0000 & 1.0000 & --- & --- & 0.0000 \\
 \bottomrule
 \end{tabular}
 \end{table}

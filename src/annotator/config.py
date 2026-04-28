@@ -32,6 +32,11 @@ class AnnotatorSettings(Settings):
     perceptions_vocab: Path = Path("data/unique_perceptions.json")
     """JSON array of 593 closed-vocabulary perception labels."""
 
+    # ── No-persona model ──────────────────────────────────────────────────────
+    no_persona_model: str = "qwen3-vl:8b"
+    """Ollama model used for the no-persona annotation conditions.
+    Set via NO_PERSONA_MODEL env var."""
+
     # ── Annotation pipeline control ───────────────────────────────────────────
     max_parse_retries: int = 3
     """Max JSON parse attempts in the vision annotator node before discarding."""
@@ -86,8 +91,20 @@ class AnnotatorSettings(Settings):
         return self.output_dir / "annotations_full_persona.jsonl"
 
     @property
+    def annotations_no_persona_think_jsonl(self) -> Path:
+        return self.output_dir / "annotations_no_persona_think.jsonl"
+
+    @property
+    def annotations_no_persona_no_think_jsonl(self) -> Path:
+        return self.output_dir / "annotations_no_persona_no_think.jsonl"
+
+    @property
     def annotation_failures_jsonl(self) -> Path:
         return self.output_dir / "annotation_failures.jsonl"
+
+    @property
+    def annotation_failures_no_persona_jsonl(self) -> Path:
+        return self.output_dir / "annotation_failures_no_persona.jsonl"
 
     def ensure_output_dirs(self) -> None:
         """Create all output directories."""

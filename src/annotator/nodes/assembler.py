@@ -4,7 +4,7 @@ Constructs the system prompt from the persona's flat demographic tags
 and stores it in ``state['system_prompt']``.
 """
 
-from annotator.prompts.vision import build_baseline_system_prompt
+from annotator.prompts.vision import build_baseline_system_prompt, build_no_persona_system_prompt
 from annotator.state import AnnotationState, CONDITIONS
 from persona_generator.logging_config import get_logger
 
@@ -31,7 +31,14 @@ def prompt_assembler(state: AnnotationState) -> AnnotationState:
             f"Unknown condition '{condition}'. Expected one of {CONDITIONS}."
         )
 
-    system_prompt = build_baseline_system_prompt(persona["raw_demographics"])
+    if condition == "baseline":
+        system_prompt = build_baseline_system_prompt(persona["raw_demographics"])
+    elif condition in ("no_persona_think", "no_persona_no_think"):
+        system_prompt = build_no_persona_system_prompt()
+    else:
+        raise ValueError(
+            f"Unknown condition '{condition}'. Expected one of {CONDITIONS}."
+        )
 
     log.debug(
         "prompt_assembler_complete",

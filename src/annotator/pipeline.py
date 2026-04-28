@@ -30,6 +30,12 @@ import numpy as np
 from annotator.config import AnnotatorSettings, annotator_settings as default_cfg
 from annotator.graph import build_annotation_graph
 from annotator.state import AnnotationState, CONDITIONS
+
+# Dummy persona record used for no-persona conditions (no demographic conditioning).
+_NO_PERSONA_RECORD = {
+    "persona_id":       "no_persona",
+    "raw_demographics": {},
+}
 from persona_generator.logging_config import get_logger
 
 log = get_logger(__name__)
@@ -412,4 +418,185 @@ async def run_annotation_batch(
         "output":     str(out_path),
     }
     log.info("annotation_batch_complete", **summary)
+    return summary
+
+
+# ── No-persona batch runner ───────────────────────────────────────────────────
+
+def _load_image_ids_from_baseline(baseline_jsonl: Path) -> set[str]:
+    """Return the set of image IDs present in an existing annotations JSONL file.
+
+    Used to ensure the no-persona run covers the exact same images as the
+    baseline experiment rather than drawing a new random sample.
+    """
+    ids: set[str] = set()
+    if not baseline_jsonl.exists():
+        return ids
+    with open(baseline_jsonl, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+                img_id = rec.get("image_id")
+                if img_id:
+                    ids.add(str(img_id))
+            except json.JSONDecodeError:
+                pass
+    return ids
+
+
+async def run_no_persona_annotation_batch(
+    think: bool,
+    cfg: AnnotatorSettings | None = None,
+    n_images: int = 500,
+    limit: int | None = None,
+    baseline_jsonl: Path | None = None,
+) -> dict:
+    """Annotate images with qwen3-vl:8b without any persona conditioning.
+
+    One annotation is produced per image (no persona loop).  Results are
+    written to separate JSONL files so existing baseline results are never
+    modified:
+      - think=True  → ``outputs/annotations_no_persona_think.jsonl``
+      - think=False → ``outputs/annotations_no_persona_no_think.jsonl``
+    Failures → ``outputs/annotation_failures_no_persona.jsonl``
+
+    Args:
+        think:          When True, qwen3-vl:8b uses extended chain-of-thought.
+        cfg:            Settings override; falls back to module singleton.
+        n_images:       Number of unique images to sample (stratified).
+                        Ignored when *baseline_jsonl* is provided.
+        limit:          Cap total images — useful for smoke-testing.
+        baseline_jsonl: When provided, restricts the image set to the exact
+                        image IDs present in that JSONL file (e.g. the 50
+                        images used in the baseline persona experiment).
+                        Takes priority over *n_images*.
+
+    Returns:
+        Summary dict: {condition, total, success, failed, duration_s, output}
+    """
+    if cfg is None:
+        cfg = default_cfg
+
+    condition = "no_persona_think" if think else "no_persona_no_think"
+
+    cfg.ensure_output_dirs()
+    rng = np.random.default_rng(cfg.random_seed)
+
+    all_images = load_images(cfg.dataset_json)
+
+    if baseline_jsonl is not None:
+        baseline_ids = _load_image_ids_from_baseline(baseline_jsonl)
+        if not baseline_ids:
+            raise ValueError(
+                f"No image IDs found in baseline JSONL: {baseline_jsonl}. "
+                "Ensure the baseline annotation has been run first."
+            )
+        # Deduplicate and filter to baseline image IDs only
+        seen: set[str] = set()
+        images = []
+        for img in all_images:
+            if img["id"] in baseline_ids and img["id"] not in seen:
+                seen.add(img["id"])
+                images.append(img)
+        log.info(
+            "no_persona_image_filter_from_baseline",
+            baseline_jsonl=str(baseline_jsonl),
+            baseline_ids=len(baseline_ids),
+            matched_images=len(images),
+        )
+    else:
+        images = _stratified_sample_images(all_images, n_images, rng)
+
+    if limit is not None:
+        images = images[:limit]
+
+    log.info(
+        "no_persona_batch_start",
+        condition=condition,
+        n_images=len(images),
+        model=cfg.no_persona_model,
+        think=think,
+    )
+
+    # Route to condition-specific output file — never touch existing baseline JSONL.
+    out_path    = (cfg.annotations_no_persona_think_jsonl if think
+                   else cfg.annotations_no_persona_no_think_jsonl)
+    failed_path = cfg.annotation_failures_no_persona_jsonl
+
+    # Resume: skip images already annotated in a previous run.
+    done_ids = _load_done_annotation_ids(out_path)
+    if done_ids:
+        before = len(images)
+        images = [img for img in images
+                  if _build_annotation_id("no_persona", img["id"], condition) not in done_ids]
+        log.info(
+            "no_persona_batch_resume",
+            condition=condition,
+            skipped=before - len(images),
+            remaining=len(images),
+        )
+
+    total = len(images)
+
+    # Build one annotation graph with the no-persona model and think setting.
+    graph = build_annotation_graph(model=cfg.no_persona_model, think=think, cfg=cfg)
+
+    log.info("image_cache_preload_start", n_images=len(images))
+    image_cache = await _preload_image_cache(images, cfg.image_dir)
+    log.info("image_cache_preload_complete", n_images=len(image_cache))
+
+    concurrency = cfg.annotation_max_concurrent
+    t0 = time.monotonic()
+    success_count = failed_count = 0
+
+    try:
+        from tqdm import tqdm as tqdm_sync
+
+        sem = asyncio.Semaphore(concurrency)
+
+        async def _bounded_annotate(img):
+            async with sem:
+                return await _annotate_one(
+                    graph,
+                    _NO_PERSONA_RECORD,
+                    img,
+                    condition,
+                    success_fh,
+                    failed_fh,
+                    image_cache,
+                )
+
+        with (
+            open(out_path,    "a", encoding="utf-8") as success_fh,
+            open(failed_path, "a", encoding="utf-8") as failed_fh,
+        ):
+            with tqdm_sync(
+                total=total,
+                desc=f"Annotating [{condition}] ×{concurrency}",
+                unit="image",
+            ) as pbar:
+                tasks = [asyncio.create_task(_bounded_annotate(img)) for img in images]
+                for future in asyncio.as_completed(tasks):
+                    result = await future
+                    if result:
+                        success_count += 1
+                    else:
+                        failed_count += 1
+                    pbar.update(1)
+
+    finally:
+        duration_s = round(time.monotonic() - t0, 1)
+
+    summary = {
+        "condition":  condition,
+        "total":      total,
+        "success":    success_count,
+        "failed":     failed_count,
+        "duration_s": duration_s,
+        "output":     str(out_path),
+    }
+    log.info("no_persona_batch_complete", **summary)
     return summary

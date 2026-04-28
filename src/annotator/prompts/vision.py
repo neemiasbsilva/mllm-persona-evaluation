@@ -93,3 +93,16 @@ def build_baseline_system_prompt(raw_demographics: dict) -> str:
     return demographic_block + ANNOTATION_INSTRUCTION
 
 
+# ── Condition NP — No Persona (neutral observer, no demographic conditioning) ─
+NO_PERSONA_SYSTEM_PROMPT = (
+    "You are an impartial image annotator. "
+    "Evaluate each image objectively, without any personal or demographic lens."
+    + ANNOTATION_INSTRUCTION
+)
+
+
+def build_no_persona_system_prompt() -> str:
+    """Return the no-persona system prompt (no demographic conditioning)."""
+    return NO_PERSONA_SYSTEM_PROMPT
+
+
