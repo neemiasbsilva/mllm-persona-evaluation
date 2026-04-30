@@ -6,17 +6,41 @@
 key & p\_type & problem & condition & n\_images & ann\_per\_image & accuracy\_mean & f1\_macro\_mean & cohen\_kappa\_mean & f1\_pos\_mean & roc\_auc\_mean & mae\_mean \\
 \midrule
 sigma3\_p2neg & p2neg & binary & baseline & 50 & 716 & 0.8200 & 0.8069 & 0.6154 & 0.7568 & 0.8209 & --- \\
+sigma3\_p2neg & p2neg & binary & no\_persona\_no\_think & 50 & 1 & 0.9000 & 0.8831 & 0.7672 & 0.8387 & 0.8672 & --- \\
+sigma3\_p2neg & p2neg & binary & no\_persona\_think & 50 & 1 & 0.8600 & 0.8417 & 0.6835 & 0.7879 & 0.8369 & --- \\
 sigma4\_p2neg & p2neg & binary & baseline & 41 & 716 & 0.8537 & 0.8423 & 0.6878 & 0.8000 & 0.8723 & --- \\
+sigma4\_p2neg & p2neg & binary & no\_persona\_no\_think & 41 & 1 & 0.9512 & 0.9437 & 0.8874 & 0.9231 & 0.9437 & --- \\
+sigma4\_p2neg & p2neg & binary & no\_persona\_think & 41 & 1 & 0.9024 & 0.8915 & 0.7836 & 0.8571 & 0.9080 & --- \\
 sigma5\_p2neg & p2neg & binary & baseline & 28 & 716 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
+sigma5\_p2neg & p2neg & binary & no\_persona\_no\_think & 28 & 1 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
+sigma5\_p2neg & p2neg & binary & no\_persona\_think & 28 & 1 & 0.9643 & 0.9602 & 0.9205 & 0.9474 & 0.9737 & --- \\
 sigma3\_p2plus & p2plus & binary & baseline & 50 & 716 & 0.8000 & 0.7971 & 0.5968 & 0.7727 & 0.8083 & --- \\
+sigma3\_p2plus & p2plus & binary & no\_persona\_no\_think & 50 & 1 & 0.8200 & 0.8164 & 0.6341 & 0.7907 & 0.8250 & --- \\
+sigma3\_p2plus & p2plus & binary & no\_persona\_think & 50 & 1 & 0.8400 & 0.8358 & 0.6721 & 0.8095 & 0.8417 & --- \\
 sigma4\_p2plus & p2plus & binary & baseline & 43 & 716 & 0.8605 & 0.8586 & 0.7196 & 0.8421 & 0.8744 & --- \\
+sigma4\_p2plus & p2plus & binary & no\_persona\_no\_think & 43 & 1 & 0.8837 & 0.8814 & 0.7640 & 0.8649 & 0.8937 & --- \\
+sigma4\_p2plus & p2plus & binary & no\_persona\_think & 43 & 1 & 0.9070 & 0.9044 & 0.8093 & 0.8889 & 0.9129 & --- \\
 sigma5\_p2plus & p2plus & binary & baseline & 24 & 716 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
+sigma5\_p2plus & p2plus & binary & no\_persona\_no\_think & 24 & 1 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
+sigma5\_p2plus & p2plus & binary & no\_persona\_think & 24 & 1 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & 1.0000 & --- \\
 sigma3\_p3 & p3 & multiclass-3 & baseline & 45 & 716 & 0.7111 & 0.5878 & 0.4482 & --- & --- & --- \\
+sigma3\_p3 & p3 & multiclass-3 & no\_persona\_no\_think & 45 & 1 & 0.7556 & 0.7041 & 0.5698 & --- & --- & --- \\
+sigma3\_p3 & p3 & multiclass-3 & no\_persona\_think & 45 & 1 & 0.7333 & 0.6640 & 0.5010 & --- & --- & --- \\
 sigma4\_p3 & p3 & multiclass-3 & baseline & 34 & 716 & 0.8529 & 0.7077 & 0.6868 & --- & --- & --- \\
+sigma4\_p3 & p3 & multiclass-3 & no\_persona\_no\_think & 34 & 1 & 0.9118 & 0.8559 & 0.8308 & --- & --- & --- \\
+sigma4\_p3 & p3 & multiclass-3 & no\_persona\_think & 34 & 1 & 0.9118 & 0.8714 & 0.8270 & --- & --- & --- \\
 sigma5\_p3 & p3 & multiclass-3 & baseline & 18 & 716 & 1.0000 & 1.0000 & 1.0000 & --- & --- & --- \\
+sigma5\_p3 & p3 & multiclass-3 & no\_persona\_no\_think & 18 & 1 & 1.0000 & 1.0000 & 1.0000 & --- & --- & --- \\
+sigma5\_p3 & p3 & multiclass-3 & no\_persona\_think & 18 & 1 & 1.0000 & 1.0000 & 1.0000 & --- & --- & --- \\
 sigma3\_p5 & p5 & ordinal-5 & baseline & 36 & 716 & 0.4722 & 0.3088 & 0.7912 & --- & --- & 0.7222 \\
+sigma3\_p5 & p5 & ordinal-5 & no\_persona\_no\_think & 36 & 1 & 0.5833 & 0.4524 & 0.8993 & --- & --- & 0.4444 \\
+sigma3\_p5 & p5 & ordinal-5 & no\_persona\_think & 36 & 1 & 0.5556 & 0.4425 & 0.8782 & --- & --- & 0.5000 \\
 sigma4\_p5 & p5 & ordinal-5 & baseline & 16 & 716 & 0.6875 & 0.5141 & 0.8491 & --- & --- & 0.4375 \\
+sigma4\_p5 & p5 & ordinal-5 & no\_persona\_no\_think & 16 & 1 & 0.8125 & 0.6597 & 0.9381 & --- & --- & 0.1875 \\
+sigma4\_p5 & p5 & ordinal-5 & no\_persona\_think & 16 & 1 & 0.8125 & 0.6865 & 0.9314 & --- & --- & 0.2500 \\
 sigma5\_p5 & p5 & ordinal-5 & baseline & 4 & 716 & 1.0000 & 1.0000 & 1.0000 & --- & --- & 0.0000 \\
+sigma5\_p5 & p5 & ordinal-5 & no\_persona\_no\_think & 4 & 1 & 1.0000 & 1.0000 & 1.0000 & --- & --- & 0.0000 \\
+sigma5\_p5 & p5 & ordinal-5 & no\_persona\_think & 4 & 1 & 1.0000 & 1.0000 & 1.0000 & --- & --- & 0.0000 \\
 \bottomrule
 \end{tabular}
 \end{table}
