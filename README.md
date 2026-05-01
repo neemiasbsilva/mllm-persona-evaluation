@@ -156,7 +156,7 @@ Pre-computed results are included. Each line in `outputs/annotations_baseline.js
   "caption":               "A tree-lined street with pedestrians walking on a sunny day.",
   "justification":         "This kind of vibrant, green space is exactly what every neighborhood deserves.",
   "parse_retries":         0,
-  "timestamp_utc":         "2025-01-15T14:23:07Z"
+  "timestamp_utc":         "2026-04-30T14:23:07Z"
 }
 ```
 
