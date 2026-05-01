@@ -8,22 +8,12 @@ Paper: [arXiv:2604.28048](https://arxiv.org/abs/2604.28048)
 
 ```mermaid
 flowchart TD
-    A["baseline_distribution.csv\n1,200 seed profiles\n(24 profiles × 50 agents)"] --> P1
+    GD["data/generate_demographics.py\n2×2×2×3 factorial grid"] --> A
 
-    subgraph P1["Phase 1 — Persona Generation  (scripts/generate_personas.py)"]
-        direction TB
-        B["Node A · Seeder\ndemographic tag injection"] --> C["Node B · Synthesizer\nbackstory generation (llama3.3:70b)"]
-        C --> D["Node C · Reflector\nexpert reflection"]
-        D --> E["Node D · Evaluator\ncoherence & guardrail check"]
-        E --> F["Node E · Compiler\nfinal prompt assembly"]
-    end
-
-    P1 --> G["personas_baseline.jsonl\n1,200 persona prompts"]
-
+    A["baseline_distribution.csv\n1,200 seed profiles\n(24 profiles × 50 agents)"] --> P2
     H["PerceptSent dataset\n50 urban-scene images"] --> P2
-    G --> P2
 
-    subgraph P2["Phase 2 — Annotation  (scripts/run_annotation.py)"]
+    subgraph P2["Annotation Pipeline  (scripts/run_annotation.py)"]
         direction TB
         I["Node 1 · Image Loader\nbase64-encode JPEG"] --> J["Node 2 · Assembler\ndemographic system prompt"]
         J --> K["Node 3 · Annotator\nQwen3-VL:8b  ·  JSON parse + retry"]
@@ -35,7 +25,7 @@ flowchart TD
 
     subgraph NP["No-Persona Baseline  (colab/setup_colab_no_persona.ipynb)"]
         direction TB
-        NP1["think=True\nannotations_no_persona_think.jsonl"] 
+        NP1["think=True\nannotations_no_persona_think.jsonl"]
         NP2["think=False\nannotations_no_persona_no_think.jsonl"]
     end
 
@@ -87,21 +77,7 @@ uv run jupyter nbconvert --to notebook --execute \
     --output-dir /tmp/nb_exec/
 ```
 
-### Phase 1 — Persona Generation
-
-```bash
-ollama pull llama3.3:70b
-
-uv run python scripts/generate_personas.py \
-    --csv data/baseline_distribution.csv
-
-# Smoke-test (5 personas)
-uv run python scripts/generate_personas.py \
-    --csv data/baseline_distribution.csv \
-    --limit 5 --max-concurrent 2
-```
-
-### Phase 2 — Annotation (baseline: 1,200 personas × 50 images)
+### Annotation (baseline: 1,200 personas × 50 images)
 
 ```bash
 export OLLAMA_NUM_PARALLEL=1
@@ -157,6 +133,7 @@ The pipeline is **crash-resilient**: on restart it skips `(persona_id, image_id)
 
 ## Data
 
+- **`data/generate_demographics.py`** — generates the 2×2×2×3 factorial profile grid
 - **`data/baseline_distribution.csv`** — 1,200 seed demographic profiles (24 profiles × 50 agents, `random_seed=42`)
 - **`data/perceptsent-raw/dataset.json`** — PerceptSent dataset metadata (5,000 images, human GT annotations)
 - **`data/perceptsent-agreement/`** — 12 agreement-filtered subsets (σ ∈ {3,4,5} × problem type)
