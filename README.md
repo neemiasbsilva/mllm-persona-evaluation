@@ -1,8 +1,5 @@
 # Stable Behavior, Limited Variation: Persona Validity in LLM Agents for Urban Sentiment Perception
 
-Paper: [arXiv:2604.28048](https://arxiv.org/abs/2604.28048)
-
----
 
 ## Pipeline Overview
 
