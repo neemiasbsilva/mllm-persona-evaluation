@@ -8,45 +8,39 @@ Paper: [arXiv:2604.28048](https://arxiv.org/abs/2604.28048)
 
 ```mermaid
 flowchart TD
-    GD["data/generate_demographics.py\n2×2×2×3 factorial grid"] --> A
+    GD["generate_demographics.py"] --> A["baseline_distribution.csv\n1,200 profiles · 50 agents each"]
 
-    A["baseline_distribution.csv\n1,200 seed profiles\n(24 profiles × 50 agents)"] --> P2
-    H["PerceptSent dataset\n50 urban-scene images"] --> P2
-
-    subgraph P2["Annotation Pipeline  (scripts/run_annotation.py)"]
-        direction TB
-        I["Node 1 · Image Loader\nbase64-encode JPEG"] --> J["Node 2 · Assembler\ndemographic system prompt"]
-        J --> K["Node 3 · Annotator\nQwen3-VL:8b  ·  JSON parse + retry"]
+    subgraph P2["Annotation Pipeline  ·  scripts/run_annotation.py"]
+        I["Image Loader"] --> J["Prompt Assembler"]
+        J --> K["Vision Annotator\nQwen3-VL:8b · T=0.1 · think=True"]
+        K --> EV["Evaluate Response"]
+        EV -->|JSON Fail| FJ["Regex Extract"]
+        EV -->|Bad Label| FL["Fuzzy Normalise"]
+        EV -->|Timeout| FT["Compact Retry"]
+        FJ & FL & FT --> K
     end
 
-    P2 --> L["annotations_baseline.jsonl\n59,708 records"]
+    A --> J
+    H["PerceptSent\n50 urban-scene images"] --> I
+    EV -->|Success| OUT["annotations_baseline.jsonl\n59,708 records"]
+    EV -->|Exhausted| FAIL["annotation_failures.jsonl\n292 records"]
 
-    H --> NP
-
-    subgraph NP["No-Persona Baseline  (colab/setup_colab_no_persona.ipynb)"]
-        direction TB
-        NP1["think=True\nannotations_no_persona_think.jsonl"]
-        NP2["think=False\nannotations_no_persona_no_think.jsonl"]
+    subgraph NP["No-Persona Baseline  ·  colab/setup_colab_no_persona.ipynb"]
+        NP1["think=True"]
+        NP2["think=False"]
     end
+
+    H --> NP1 & NP2
 
     subgraph NB["Notebook Analysis"]
-        direction TB
-        N1["01 · Baseline EDA\ndemographic balance · Hamming distance"]
-        N2["02 · Convergence Analysis\nmodal ratio · Cohen κ · Macro F1"]
-        N3["03 · PerceptSent Agreement\n12 subsets · σ × p-type evaluation"]
-        N4["05 · RQ1 Box Plots\nsentiment by profile & dimension"]
+        N1["01 · Baseline EDA"]
+        N2["02 · Convergence Analysis"]
+        N3["03 · PerceptSent Agreement"]
+        N4["05 · RQ1 Box Plots"]
     end
 
-    L --> N1
-    L --> N2
-    L --> N3
-    L --> N4
-    NP --> N3
-
-    N1 --> R["figures/  +  docs/"]
-    N2 --> R
-    N3 --> R
-    N4 --> R
+    OUT --> N1 & N2 & N3 & N4
+    NP1 & NP2 --> N3
 ```
 
 ---
