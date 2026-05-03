@@ -130,7 +130,40 @@ The pipeline is **crash-resilient**: on restart it skips `(persona_id, image_id)
 - **`data/perceptsent-agreement/`** — 12 agreement-filtered subsets (σ ∈ {3,4,5} × problem type)
 - **`data/raw_images/`** — place PerceptSent JPEG files here as `{image_id}.jpg`
 
-Images: download from the [PerceptSent repository](https://github.com/PerceptSent/PerceptSent).
+### Downloading the datasets
+
+**PerceptSent raw** (`data/perceptsent-raw/`) — clone the original repository and copy the metadata:
+
+```bash
+git clone https://github.com/ceslop84/perceptsent /tmp/perceptsent-raw
+cp -r /tmp/perceptsent-raw/. data/perceptsent-raw/
+```
+
+**PerceptSent agreement** (`data/perceptsent-agreement/`) — download the 12 agreement-filtered subsets from Google Drive:
+
+> [https://drive.google.com/drive/folders/1mopyjmtWCFNT-GbuX9MqWjNXPE-FA58Y](https://drive.google.com/drive/folders/1mopyjmtWCFNT-GbuX9MqWjNXPE-FA58Y)
+
+Place the downloaded folder contents under `data/perceptsent-agreement/`.
+
+You can also use `gdown` to download programmatically:
+
+```bash
+pip install gdown
+gdown --folder https://drive.google.com/drive/folders/1mopyjmtWCFNT-GbuX9MqWjNXPE-FA58Y \
+    -O data/perceptsent-agreement/
+```
+
+**Raw images** (`data/raw_images/`) — download the ZIP archive from Google Drive and extract it:
+
+> [https://drive.google.com/file/d/1JKgmFh2VRHZMD3eekIY0-Y25ODIhV5zI/view?usp=share_link](https://drive.google.com/file/d/1JKgmFh2VRHZMD3eekIY0-Y25ODIhV5zI/view?usp=share_link)
+
+```bash
+pip install gdown
+gdown 1JKgmFh2VRHZMD3eekIY0-Y25ODIhV5zI -O /tmp/raw_images.zip
+unzip /tmp/raw_images.zip -d data/raw_images/
+```
+
+Each image must be accessible as `data/raw_images/{image_id}.jpg`.
 
 ---
 
