@@ -1,5 +1,15 @@
 # Stable Behavior, Limited Variation: Persona Validity in LLM Agents for Urban Sentiment Perception
 
+---
+![Python](https://img.shields.io/badge/python-3.11-blue?style=for-the-badge&logo=python&logoColor=ffdd54)
+![LangGraph](https://img.shields.io/badge/LangGraph-0.2+-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-local%20inference-black?style=for-the-badge&logo=ollama&logoColor=white)
+![pandas](https://img.shields.io/badge/pandas-2.0+-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8+-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/HuggingFace-sentence--transformers-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![uv](https://img.shields.io/badge/uv-package%20manager-5C3EE8?style=for-the-badge)
+![Jupyter](https://img.shields.io/badge/Jupyter-notebooks-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
+---
 
 ## Pipeline Overview
 
