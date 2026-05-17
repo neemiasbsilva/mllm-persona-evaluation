@@ -54,7 +54,10 @@ flowchart TD
 
 ## Setup
 
-**Requirements:** Python 3.11+, [uv](https://docs.astral.sh/uv/), [Ollama](https://ollama.com/) (only to re-run experiments — pre-computed results are included).
+**Requirements:** 
+    - Python 3.11+; 
+    - [uv](https://docs.astral.sh/uv/);
+    - [Ollama](https://ollama.com/) (only to re-run experiments — pre-computed results are included).
 
 ```bash
 git clone https://github.com/neemiasbsilva/mllm-persona-evaluation.git
