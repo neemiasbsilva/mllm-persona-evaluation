@@ -453,6 +453,7 @@ async def run_no_persona_annotation_batch(
     n_images: int = 500,
     limit: int | None = None,
     baseline_jsonl: Path | None = None,
+    n_runs: int = 1,
 ) -> dict:
     """Annotate images with qwen3-vl:8b without any persona conditioning.
 
@@ -473,6 +474,14 @@ async def run_no_persona_annotation_batch(
                         image IDs present in that JSONL file (e.g. the 50
                         images used in the baseline persona experiment).
                         Takes priority over *n_images*.
+        n_runs:         Number of independent annotation passes over the image
+                        set.  Each pass uses a distinct persona_id
+                        (``np_r01``, ``np_r02``, …) so its annotation IDs
+                        never collide with previous passes.  Results from all
+                        passes are **appended** to the same output JSONL —
+                        the file is never overwritten.  Re-running is safe:
+                        already-completed pass/image pairs are skipped
+                        automatically.
 
     Returns:
         Summary dict: {condition, total, success, failed, duration_s, output}
@@ -494,7 +503,6 @@ async def run_no_persona_annotation_batch(
                 f"No image IDs found in baseline JSONL: {baseline_jsonl}. "
                 "Ensure the baseline annotation has been run first."
             )
-        # Deduplicate and filter to baseline image IDs only
         seen: set[str] = set()
         images = []
         for img in all_images:
@@ -513,35 +521,11 @@ async def run_no_persona_annotation_batch(
     if limit is not None:
         images = images[:limit]
 
-    log.info(
-        "no_persona_batch_start",
-        condition=condition,
-        n_images=len(images),
-        model=cfg.no_persona_model,
-        think=think,
-    )
-
     # Route to condition-specific output file — never touch existing baseline JSONL.
     out_path    = (cfg.annotations_no_persona_think_jsonl if think
                    else cfg.annotations_no_persona_no_think_jsonl)
     failed_path = cfg.annotation_failures_no_persona_jsonl
 
-    # Resume: skip images already annotated in a previous run.
-    done_ids = _load_done_annotation_ids(out_path)
-    if done_ids:
-        before = len(images)
-        images = [img for img in images
-                  if _build_annotation_id("no_persona", img["id"], condition) not in done_ids]
-        log.info(
-            "no_persona_batch_resume",
-            condition=condition,
-            skipped=before - len(images),
-            remaining=len(images),
-        )
-
-    total = len(images)
-
-    # Build one annotation graph with the no-persona model and think setting.
     graph = build_annotation_graph(model=cfg.no_persona_model, think=think, cfg=cfg)
 
     log.info("image_cache_preload_start", n_images=len(images))
@@ -550,51 +534,81 @@ async def run_no_persona_annotation_batch(
 
     concurrency = cfg.annotation_max_concurrent
     t0 = time.monotonic()
-    success_count = failed_count = 0
+    total_success = total_failed = total_annotated = 0
 
-    try:
-        from tqdm import tqdm as tqdm_sync
+    from tqdm import tqdm as tqdm_sync
 
-        sem = asyncio.Semaphore(concurrency)
+    with (
+        open(out_path,    "a", encoding="utf-8") as success_fh,
+        open(failed_path, "a", encoding="utf-8") as failed_fh,
+    ):
+        for run_idx in range(1, n_runs + 1):
+            # Each run uses a distinct persona_id so annotation IDs never
+            # collide across runs, making every run idempotently resumable.
+            persona_record = {
+                "persona_id":       f"np_r{run_idx:02d}",
+                "raw_demographics": {},
+            }
 
-        async def _bounded_annotate(img):
-            async with sem:
-                return await _annotate_one(
-                    graph,
-                    _NO_PERSONA_RECORD,
-                    img,
-                    condition,
-                    success_fh,
-                    failed_fh,
-                    image_cache,
-                )
+            # Resume: determine which images this run still needs.
+            done_ids = _load_done_annotation_ids(out_path)
+            run_images = [
+                img for img in images
+                if _build_annotation_id(
+                    persona_record["persona_id"], img["id"], condition
+                ) not in done_ids
+            ]
 
-        with (
-            open(out_path,    "a", encoding="utf-8") as success_fh,
-            open(failed_path, "a", encoding="utf-8") as failed_fh,
-        ):
+            log.info(
+                "no_persona_batch_start",
+                condition=condition,
+                run=run_idx,
+                n_runs=n_runs,
+                n_images=len(run_images),
+                model=cfg.no_persona_model,
+                think=think,
+            )
+
+            if not run_images:
+                log.info("no_persona_batch_run_already_done", run=run_idx)
+                continue
+
+            sem = asyncio.Semaphore(concurrency)
+
+            async def _bounded_annotate(img, pr=persona_record):
+                async with sem:
+                    return await _annotate_one(
+                        graph, pr, img, condition,
+                        success_fh, failed_fh, image_cache,
+                    )
+
+            run_success = run_failed = 0
             with tqdm_sync(
-                total=total,
-                desc=f"Annotating [{condition}] ×{concurrency}",
+                total=len(run_images),
+                desc=f"[{condition}] run {run_idx}/{n_runs} ×{concurrency}",
                 unit="image",
             ) as pbar:
-                tasks = [asyncio.create_task(_bounded_annotate(img)) for img in images]
+                tasks = [asyncio.create_task(_bounded_annotate(img)) for img in run_images]
                 for future in asyncio.as_completed(tasks):
                     result = await future
                     if result:
-                        success_count += 1
+                        run_success += 1
                     else:
-                        failed_count += 1
+                        run_failed += 1
                     pbar.update(1)
 
-    finally:
-        duration_s = round(time.monotonic() - t0, 1)
+            total_annotated += len(run_images)
+            total_success   += run_success
+            total_failed    += run_failed
+
+    duration_s = round(time.monotonic() - t0, 1)
 
     summary = {
         "condition":  condition,
-        "total":      total,
-        "success":    success_count,
-        "failed":     failed_count,
+        "n_runs":     n_runs,
+        "total":      total_annotated,
+        "success":    total_success,
+        "failed":     total_failed,
         "duration_s": duration_s,
         "output":     str(out_path),
     }

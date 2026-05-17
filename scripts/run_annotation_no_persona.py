@@ -133,6 +133,19 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Override RANDOM_SEED for stratified image sampling.",
     )
+    parser.add_argument(
+        "--n-runs",
+        type=int,
+        default=1,
+        metavar="N",
+        help=(
+            "Number of independent annotation passes over the image set (default: 1). "
+            "Each pass uses a distinct run ID (np_r01, np_r02, …) so its annotation "
+            "IDs never collide with previous passes. Results are *appended* to the "
+            "same output JSONL — the file is never overwritten. Re-running is safe: "
+            "already-completed pass/image pairs are skipped automatically."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -167,15 +180,16 @@ def _run_one(think: bool, args: argparse.Namespace, cfg: AnnotatorSettings) -> d
             n_images=args.n_images,
             limit=args.limit,
             baseline_jsonl=args.baseline_jsonl,
+            n_runs=args.n_runs,
         )
     )
 
 
 def _print_summary(summary: dict) -> None:
-    think_label = "think=True" if "no_think" not in summary["condition"] else "think=False"
     print("\n" + "=" * 60)
     print(f"  COMPLETE — {summary['condition'].upper()}")
     print("=" * 60)
+    print(f"  Runs             : {summary.get('n_runs', 1)}")
     print(f"  Images processed : {summary['total']}")
     print(f"  Successful       : {summary['success']}")
     print(f"  Failed           : {summary['failed']}")
