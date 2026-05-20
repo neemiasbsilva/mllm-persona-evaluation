@@ -72,7 +72,24 @@ cp .env.example .env   # edit model names, Ollama URL, concurrency
 
 ### Notebooks (pre-computed outputs — recommended)
 
-All figures were generated from `outputs/annotations_baseline.jsonl`. Run any notebook directly:
+All notebooks now read their data from `outputs/` and delegate all plotting / metric
+logic to [`src/utils/`](src/utils/). Each notebook is **just a few cells**: import the
+matching utility module, load the data, then call the figure functions.
+
+| Notebook | Module |
+|---|---|
+| [`01_baseline_distribution_eda.ipynb`](notebooks/01_baseline_distribution_eda.ipynb) | [`src/utils/baseline_eda.py`](src/utils/baseline_eda.py) |
+| [`02_convergence_analysis_profile.ipynb`](notebooks/02_convergence_analysis_profile.ipynb) | [`src/utils/convergence.py`](src/utils/convergence.py) |
+| [`03_perceptsent_cv_agreement.ipynb`](notebooks/03_perceptsent_cv_agreement.ipynb) | [`src/utils/agreement.py`](src/utils/agreement.py) |
+| [`05_rq1_boxplots_cosine.ipynb`](notebooks/05_rq1_boxplots_cosine.ipynb) | [`src/utils/boxplots.py`](src/utils/boxplots.py) |
+
+Shared constants (paths, sentiment orderings, palette setup), data loaders, and
+statistical helpers (Wilson / bootstrap CI, Krippendorff α, modal-ratio) live in
+[`src/utils/common.py`](src/utils/common.py). Plot style — `sns.set_theme(style="whitegrid", context="paper")`,
+the `muted` palette, 300 dpi PDF + PNG output — is preserved exactly as in the
+original notebooks.
+
+**Run a single notebook:**
 
 ```bash
 uv run jupyter nbconvert --to notebook --execute \
@@ -80,6 +97,27 @@ uv run jupyter nbconvert --to notebook --execute \
     notebooks/01_baseline_distribution_eda.ipynb \
     --output-dir /tmp/nb_exec/
 ```
+
+**Run every notebook in one command** (writes the executed copies back to
+`notebooks/` and refreshes everything under `figures/`):
+
+```bash
+bash scripts/run_all_notebooks.sh
+```
+
+You can also run a subset by passing one or more filename fragments — for
+example `bash scripts/run_all_notebooks.sh 02 03` will only re-execute notebooks
+02 and 03. The per-notebook timeout can be overridden with `NB_TIMEOUT=...`.
+
+**Call the utilities directly from Python** (no notebook needed):
+
+```bash
+uv run python -c "import sys; sys.path.insert(0, 'src'); \
+    from utils import baseline_eda; baseline_eda.run_all()"
+```
+
+Every utility module exposes a `run_all()` orchestrator that reproduces the full
+notebook end-to-end.
 
 ### Annotation (baseline: 1,200 personas × 50 images)
 
